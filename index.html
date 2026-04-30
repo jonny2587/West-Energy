@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>West Energy LLC – Licensed Electrical Contractor | Forked River, NJ</title>
+  <meta name="description" content="West Energy LLC — NJ-licensed electrical contractor serving all of New Jersey. Residential & commercial wiring, panel upgrades, EV chargers, generators, lighting, drone thermography. NJ License #34EI01887500." />
+  <link rel="icon" type="image/png" href="uploads/West Energy Logo no background.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: #f5f2e8; color: #1e1a14; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f5f2e8; }
+    ::-webkit-scrollbar-thumb { background: #c8c0a8; border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+/* ============================================================
+   ★ EDIT THIS BLOCK TO UPDATE THE SITE ★
+   ----------------------------------------------------------
+   • Change phone / email / colors in SETTINGS.
+   • Add a customer review by appending an object to REVIEWS.
+   • Add a gallery photo: drop the image file into the
+     `uploads/` folder, then add an entry to GALLERY with the
+     filename and a short caption.
+   ============================================================ */
+
+const SETTINGS = {
+  accentColor: "#c9a84c",
+  darkColor:   "#1e1a14",
+  creamColor:  "#f5f2e8",
+  phoneNumber: "908-433-5931",
+  emailAddress: "info@westenergyusa.com",
+  // Where the Contact form delivers messages. The address below
+  // matches emailAddress and is used by FormSubmit.co.
+  formDeliveryEmail: "info@westenergyusa.com",
+  googleReviewUrl: "https://g.page/r/CeoJiajR6fPlEAI/review",
+  showTestimonials: true,
+};
+
+// --- REVIEWS ------------------------------------------------
+// To add a new review later, copy one block and paste a new
+// one below it. Keep the trailing comma between objects.
+const REVIEWS = [
+  {
+    quote: "Lew and Jon have completed several electrical projects for me, and I highly recommend them. Their workmanship is top-notch, with a strong attention to detail. They also take the time to clearly discuss each project and thoughtfully address any questions or concerns I have.",
+    name: "Shannon M.",
+    location: "Red Bank, NJ",
+  },
+  {
+    quote: "West Energy is my go to electricians for my Dance Studio. They always respond in a timely manner and do great work.",
+    name: "Kristin D.",
+    location: "Basically Ballet Studios, Forked River, NJ",
+  },
+  {
+    quote: "We have used West Energy LLC as a sub-contractor on projects when we needed some of their specialty services such as Drone Thermography on Solar System Troubleshooting and O&M work. Their attention to detail is an asset for B2B services.",
+    name: "Arun C.",
+    location: "Solarmite Solutions, Neptune, NJ",
+  },
+];
+
+// --- GALLERY ------------------------------------------------
+// To add a photo: drop the image into `uploads/`, then add a
+// new { src, label } entry below.
+const GALLERY = [
+  { label: "Pendant light fixture installation", src: "uploads/IMG_2325.JPG" },
+  { label: "Recessed lighting — living room", src: "uploads/IMG_2323.JPG" },
+  { label: "Residential panel upgrade", src: "uploads/IMG_0296.JPG" },
+  { label: "EV charger installation (Emporia)", src: "uploads/IMG_8595.JPG" },
+  { label: "Tesla Wall Connector installation", src: "uploads/1B560BB7-FED1-45F2-A550-C6C228A95CE8_1_105_c.jpeg" },
+  { label: "Ceiling fan & smoke detector install", src: "uploads/7FB73260-F5FE-4A57-81E0-4350DB43BA73_1_105_c.jpeg" },
+  { label: "Bathroom electrical — vanity & outlets", src: "uploads/11ADBD18-D432-4A05-9240-DCEA5422D066_1_105_c.jpeg" },
+  { label: "New construction rough-in wiring", src: "uploads/45E74ECD-A753-4289-9654-7B461CBA79E8_1_102_o.jpeg" },
+  { label: "New construction — ceiling rough-in", src: "uploads/384EB56A-CE04-4D68-AC7E-11183832B8BB_1_102_o.jpeg" },
+  { label: "Designer pendant light install", src: "uploads/48053781-F1AD-4BE0-A511-76D63F219E3E_1_105_c.jpeg" },
+  { label: "New construction electrical rough-in", src: "uploads/DDB36E18-0F82-41B9-ABE3-B0B1115DFFC2_1_102_o.jpeg" },
+  { label: "EV charger disconnect box", src: "uploads/IMG_1165.JPG" },
+  { label: "Recessed lighting — finished space", src: "uploads/IMG_2324.JPG" },
+  { label: "Roof junction box for solar", src: "uploads/IMG_3213.JPG" },
+  { label: "Exterior flood light installation", src: "uploads/IMG_6242.JPG" },
+];
+
+/* ============================================================
+   END EDITABLE BLOCK
+   ============================================================ */
+
+// ── ICONS ──────────────────────────────────────────────────
+function IconStar({ size = 18, filled = false, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? color : "none"} stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+    </svg>
+  );
+}
+function IconCheck({ size = 18, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+  );
+}
+function IconPin({ size = 18, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+      <circle cx="12" cy="10" r="3"></circle>
+    </svg>
+  );
+}
+function IconPhone({ size = 18, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.38 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    </svg>
+  );
+}
+function IconMail({ size = 18, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+      <polyline points="22,6 12,13 2,6"></polyline>
+    </svg>
+  );
+}
+function IconMenu({ size = 24, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  );
+}
+function IconX({ size = 24, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  );
+}
+
+// ── NAV ────────────────────────────────────────────────────
+function Nav({ activeSection }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const links = [
+    { href: "#home", label: "Home" },
+    { href: "#services", label: "Services" },
+    { href: "#why-us", label: "Why Us" },
+    { href: "#gallery", label: "Gallery" },
+    { href: "#contact", label: "Contact" },
+  ];
+
+  const navStyle = {
+    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+    background: scrolled ? SETTINGS.creamColor : 'transparent',
+    borderBottom: scrolled ? `1px solid ${SETTINGS.accentColor}33` : 'none',
+    transition: 'background 0.3s, border-color 0.3s',
+    boxShadow: scrolled ? '0 2px 12px rgba(0,0,0,0.06)' : 'none',
+  };
+
+  const linkStyle = (href) => ({
+    color: SETTINGS.darkColor,
+    textDecoration: 'none',
+    fontSize: '14px',
+    fontWeight: '500',
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
+    padding: '6px 0',
+    borderBottom: activeSection === href.slice(1) ? `2px solid ${SETTINGS.accentColor}` : '2px solid transparent',
+    transition: 'border-color 0.2s',
+  });
+
+  return (
+    <nav style={navStyle}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
+        <a href="#home" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+          <img src="uploads/West Energy Logo no background.png" alt="West Energy LLC" style={{ height: 48 }} />
+        </a>
+        <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 32, alignItems: 'center' }} className="desktop-nav">
+            {links.map(l => (
+              <a key={l.href} href={l.href} style={linkStyle(l.href)} onClick={() => setMenuOpen(false)}>
+                {l.label}
+              </a>
+            ))}
+          </div>
+          <a href="#contact" style={{
+            background: SETTINGS.accentColor, color: '#fff', padding: '10px 22px',
+            borderRadius: 2, fontSize: '13px', fontWeight: '600', textDecoration: 'none',
+            letterSpacing: '0.05em', textTransform: 'uppercase', whiteSpace: 'nowrap',
+          }} className="desktop-nav">
+            Free Estimate
+          </a>
+          <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu" style={{ background: 'none', border: 'none', cursor: 'pointer', color: SETTINGS.darkColor, padding: 4 }} className="mobile-menu-btn">
+            {menuOpen ? <IconX size={24} /> : <IconMenu size={24} />}
+          </button>
+        </div>
+      </div>
+      {menuOpen && (
+        <div style={{ background: SETTINGS.creamColor, borderTop: `1px solid ${SETTINGS.accentColor}33`, padding: '16px 32px 24px' }}>
+          {links.map(l => (
+            <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '12px 0', color: SETTINGS.darkColor, textDecoration: 'none', fontSize: '15px', fontWeight: '500', borderBottom: `1px solid ${SETTINGS.darkColor}10` }}>
+              {l.label}
+            </a>
+          ))}
+          <a href="#contact" onClick={() => setMenuOpen(false)} style={{ display: 'block', marginTop: 16, background: SETTINGS.accentColor, color: '#fff', padding: '12px 22px', textAlign: 'center', borderRadius: 2, fontSize: '14px', fontWeight: '600', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Free Estimate
+          </a>
+        </div>
+      )}
+      <style>{`
+        @media (max-width: 768px) { .desktop-nav { display: none !important; } }
+        @media (min-width: 769px) { .mobile-menu-btn { display: none !important; } }
+      `}</style>
+    </nav>
+  );
+}
+
+// ── HERO ───────────────────────────────────────────────────
+function Hero() {
+  return (
+    <section id="home" style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center',
+      background: SETTINGS.darkColor,
+      position: 'relative', overflow: 'hidden',
+    }}>
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+        <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="buildingFade" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#1e1a14" stopOpacity="1"/>
+              <stop offset="20%" stopColor="#1e1a14" stopOpacity="0"/>
+              <stop offset="100%" stopColor="#1e1a14" stopOpacity="0"/>
+            </linearGradient>
+            <mask id="bldgMask">
+              <rect x="0" y="0" width="1440" height="900" fill="white"/>
+              <rect x="0" y="0" width="1440" height="900" fill="url(#buildingFade)"/>
+            </mask>
+          </defs>
+
+          <g opacity="0.65" mask="url(#bldgMask)">
+            <rect x="568" y="180" width="9" height="720" fill="#302818"/>
+            <rect x="524" y="268" width="96" height="7" rx="1" fill="#302818"/>
+            <rect x="538" y="298" width="70" height="5" rx="1" fill="#2c2418"/>
+            {[[524,268],[620,268],[538,298],[608,298]].map(([x,y],i) => (
+              <g key={i}>{[0,5,10].map(dy=><ellipse key={dy} cx={x} cy={y+dy+3} rx="3" ry="2.1" fill="#242018"/>)}</g>
+            ))}
+            <line x1="572" y1="265" x2="660" y2="450" stroke="#2a2218" strokeWidth="1.3" opacity="0.8"/>
+          </g>
+
+          <g opacity="0.75">
+            {[900,800,700,600,500,400,300,200].map((y) => {
+              const t=(900-y)/820; const w=26-t*18; const cx=1220;
+              return <g key={y}>
+                <line x1={cx-w} y1={y} x2={cx+w} y2={y-100} stroke="#342c1c" strokeWidth="1.7" opacity="0.85"/>
+                <line x1={cx+w} y1={y} x2={cx-w} y2={y-100} stroke="#342c1c" strokeWidth="1.7" opacity="0.85"/>
+                <line x1={cx-w} y1={y} x2={cx+w} y2={y} stroke="#2e2818" strokeWidth="1" opacity="0.45"/>
+              </g>;
+            })}
+            <polygon points="1202,900 1238,900 1222,72 1214,72" fill="#2e2818"/>
+            <rect x="1144" y="80" width="156" height="7" rx="1" fill="#363020"/>
+            <line x1="1144" y1="84" x2="1200" y2="102" stroke="#363020" strokeWidth="2.5"/>
+            <line x1="1300" y1="84" x2="1242" y2="102" stroke="#363020" strokeWidth="2.5"/>
+            <rect x="1160" y="120" width="122" height="6" rx="1" fill="#322c1a"/>
+            <line x1="1160" y1="123" x2="1206" y2="137" stroke="#322c1a" strokeWidth="2"/>
+            <line x1="1282" y1="123" x2="1236" y2="137" stroke="#322c1a" strokeWidth="2"/>
+            {[[1144,80],[1300,80],[1160,120],[1282,120]].map(([x,y],i) => (
+              <g key={i}>{[0,5,10,15,20].map(dy=><ellipse key={dy} cx={x} cy={y+dy+4} rx="3.2" ry="2.3" fill="#262018"/>)}</g>
+            ))}
+            <circle cx="1218" cy="52" r="4" fill="#343018"/>
+            <polygon points="1214,52 1218,52 1222,74 1212,74" fill="#343018"/>
+            <polygon points="1202,900 1212,900 1216,768 1206,768" fill="#2a2416"/>
+            <polygon points="1228,900 1238,900 1226,768 1216,768" fill="#2a2416"/>
+          </g>
+
+          <g mask="url(#bldgMask)">
+            <rect x="590" y="360" width="850" height="540" fill="#36301e"/>
+
+            <rect x="582" y="360" width="866" height="52" fill="#3e3826"/>
+            <rect x="582" y="360" width="866" height="5" fill="#5a5036"/>
+            <rect x="608" y="368" width="818" height="36" fill="#3a3422"/>
+            <rect x="612" y="372" width="810" height="28" fill="none" stroke="#6e6244" strokeWidth="2.5"/>
+            <rect x="618" y="376" width="798" height="20" fill="none" stroke="#504a32" strokeWidth="1"/>
+            <text x="1017" y="390" textAnchor="middle" dominantBaseline="middle" fontFamily="Playfair Display, serif" fontSize="26" fontWeight="700" fill="#706448" letterSpacing="10">WEST</text>
+            <rect x="578" y="408" width="874" height="6" fill="#504838" rx="1"/>
+            <rect x="582" y="412" width="866" height="4" fill="#463e2e"/>
+
+            <rect x="574" y="416" width="874" height="12" rx="1" fill="#5e5038"/>
+            <rect x="578" y="428" width="866" height="8" fill="#52482e"/>
+            {Array.from({length:38}).map((_,i)=>(
+              <rect key={i} x={590+i*22} y="436" width="13" height="9" fill="#5a5034"/>
+            ))}
+            <rect x="582" y="445" width="858" height="7" fill="#4a4230"/>
+
+            {[590,819,1048,1277].map(x=>(
+              <g key={x}>
+                <rect x={x} y="452" width="36" height="228" fill="#22201a"/>
+                {[470,488,506,524,542,560,578,596,614,632,650].map(y=>(
+                  <line key={y} x1={x+2} y1={y} x2={x+34} y2={y} stroke="#1e1c16" strokeWidth="1" opacity="0.5"/>
+                ))}
+              </g>
+            ))}
+            <rect x="590" y="452" width="14" height="228" fill="#36301e"/>
+            <rect x="1404" y="452" width="36" height="228" fill="#22201a"/>
+
+            {[723,952,1181,1377].map(cx=>(
+              <g key={cx}>
+                <rect x={cx-22} y="458" width="44" height="44" fill="#32281a" stroke="#5a4e32" strokeWidth="2"/>
+                <polygon points={`${cx},460 ${cx+18},480 ${cx},500 ${cx-18},480`} fill="#2c2418" stroke="#6a5e3c" strokeWidth="2"/>
+                <polygon points={`${cx},466 ${cx+12},480 ${cx},494 ${cx-12},480`} fill="#342e1e" stroke="#584e32" strokeWidth="1.2"/>
+                <line x1={cx-20} y1="480" x2={cx+20} y2="480" stroke="#6a5e3c" strokeWidth="1.5"/>
+                <line x1={cx} y1="460" x2={cx} y2="500" stroke="#6a5e3c" strokeWidth="1.5"/>
+                <circle cx={cx} cy="480" r="4" fill="#7a6e48"/>
+                <circle cx={cx} cy="480" r="2" fill="#8a7c52"/>
+                {[[-14,0],[14,0],[0,-14],[0,14]].map(([dx,dy],i)=>(
+                  <rect key={i} x={cx+dx-3} y={480+dy-3} width="6" height="6" fill="#625638" transform={`rotate(45,${cx+dx},${480+dy})`}/>
+                ))}
+              </g>
+            ))}
+
+            {[723,952,1181,1377].map(cx=>(
+              <g key={cx}>
+                <rect x={cx-62} y="514" width="124" height="12" fill="#4a4230"/>
+                <polygon points={`${cx-60},526 ${cx+60},526 ${cx},500`} fill="#3e3826"/>
+                <polygon points={`${cx-60},526 ${cx+60},526 ${cx},500`} fill="none" stroke="#5e5438" strokeWidth="2.5"/>
+                <polygon points={`${cx-50},526 ${cx+50},526 ${cx},506`} fill="none" stroke="#4a4230" strokeWidth="1.2"/>
+                <rect x={cx-62} y="524" width="124" height="148" fill="none" stroke="#5a5034" strokeWidth="3"/>
+                <rect x={cx-58} y="528" width="116" height="140" fill="#0e0c08"/>
+                <rect x={cx-54} y="532" width="108" height="132" fill="none" stroke="#3a3420" strokeWidth="1.5"/>
+                <line x1={cx} y1="530" x2={cx} y2="668" stroke="#4a4230" strokeWidth="3"/>
+                <line x1={cx-58} y1="598" x2={cx+58} y2="598" stroke="#4a4230" strokeWidth="2.5"/>
+                <line x1={cx-29} y1="532" x2={cx-29} y2="598" stroke="#3a3420" strokeWidth="1.2"/>
+                <line x1={cx+29} y1="532" x2={cx+29} y2="598" stroke="#3a3420" strokeWidth="1.2"/>
+                <line x1={cx-58} y1="565" x2={cx+58} y2="565" stroke="#3a3420" strokeWidth="1.2"/>
+                <line x1={cx-29} y1="600" x2={cx-29} y2="668" stroke="#3a3420" strokeWidth="1.2"/>
+                <line x1={cx+29} y1="600" x2={cx+29} y2="668" stroke="#3a3420" strokeWidth="1.2"/>
+                <line x1={cx-58} y1="634" x2={cx+58} y2="634" stroke="#3a3420" strokeWidth="1.2"/>
+                <rect x={cx-66} y="668" width="132" height="10" rx="1" fill="#5a5034"/>
+                <rect x={cx-70} y="674" width="140" height="6" rx="1" fill="#4e4430"/>
+              </g>
+            ))}
+
+            <rect x="590" y="680" width="850" height="60" fill="#141210"/>
+            <rect x="590" y="680" width="850" height="4" fill="#5a5034"/>
+            <rect x="590" y="736" width="850" height="4" fill="#4a4230"/>
+            <rect x="598" y="686" width="154" height="48" fill="#181612" rx="1"/>
+            <rect x="602" y="690" width="146" height="40" fill="none" stroke="#4a4230" strokeWidth="1.5"/>
+            {[610,622,634,646,658,670,682,694,706,718,730].map((x,i)=>(
+              <rect key={i} x={x} y="696" width="8" height="26" rx="1" fill="#504838" opacity="0.75"/>
+            ))}
+            <rect x="762" y="684" width="506" height="52" fill="#161410" rx="1"/>
+            <rect x="766" y="688" width="498" height="44" fill="none" stroke="#6a5e3c" strokeWidth="2"/>
+            {[782,808,834,868,894,920,958,996,1022,1048,1080,1116,1142,1168,1196,1228,1254].map((x,i)=>(
+              <rect key={i} x={x} y="696" width={i===5||i===11?10:i%5===2?30:20} height="30" rx="1" fill="#5e5438" opacity="0.85"/>
+            ))}
+            <rect x="1278" y="686" width="154" height="48" fill="#181612" rx="1"/>
+            <rect x="1282" y="690" width="146" height="40" fill="none" stroke="#4a4230" strokeWidth="1.5"/>
+            {[1290,1302,1314,1326,1338,1350,1362,1374,1386,1398,1410].map((x,i)=>(
+              <rect key={i} x={x} y="696" width="8" height="26" rx="1" fill="#504838" opacity="0.75"/>
+            ))}
+
+            <rect x="590" y="740" width="850" height="160" fill="#1e1c14"/>
+            <rect x="590" y="740" width="850" height="16" fill="#22201a"/>
+
+            <rect x="596" y="758" width="104" height="138" fill="#1a1812" rx="1"/>
+            <rect x="600" y="762" width="96" height="130" fill="none" stroke="#3a3420" strokeWidth="2"/>
+            <line x1="648" y1="764" x2="648" y2="892" stroke="#2e2c1e" strokeWidth="1.5"/>
+            <rect x="602" y="764" width="44" height="60" fill="#141210" rx="1"/>
+            <rect x="604" y="766" width="40" height="56" fill="none" stroke="#2a2818" strokeWidth="1"/>
+            <rect x="602" y="830" width="44" height="60" fill="#141210" rx="1"/>
+
+            <rect x="708" y="756" width="242" height="138" rx="1" fill="#0c0c0a"/>
+            <rect x="712" y="760" width="234" height="130" fill="none" stroke="#4a4430" strokeWidth="2.5"/>
+            <line x1="712" y1="800" x2="950" y2="800" stroke="#3a3422" strokeWidth="2"/>
+            {[752,792,832,872,912].map(x=><line key={x} x1={x} y1="760" x2={x} y2="890" stroke="#342e20" strokeWidth="1.5"/>)}
+
+            <rect x="958" y="754" width="98" height="142" fill="#181612" rx="1"/>
+            <rect x="962" y="758" width="90" height="134" fill="none" stroke="#4a4430" strokeWidth="2.5"/>
+            <line x1="1007" y1="760" x2="1007" y2="892" stroke="#3a3422" strokeWidth="2"/>
+            {[[968,766],[982,766],[996,766],[968,786],[982,786],[996,786],
+              [968,806],[982,806],[996,806],[968,826],[982,826],[996,826],
+              [1014,766],[1028,766],[1042,766],[1014,786],[1028,786],[1042,786],
+              [1014,806],[1028,806],[1042,806],[1014,826],[1028,826],[1042,826]].map(([x,y],i)=>(
+              <polygon key={i} points={`${x+5},${y} ${x+10},${y+8} ${x+5},${y+16} ${x},${y+8}`} fill="#28261a" stroke="#3a3822" strokeWidth="0.7"/>
+            ))}
+
+            <rect x="1064" y="756" width="242" height="138" rx="1" fill="#0c0c0a"/>
+            <rect x="1068" y="760" width="234" height="130" fill="none" stroke="#4a4430" strokeWidth="2.5"/>
+            <line x1="1068" y1="800" x2="1306" y2="800" stroke="#3a3422" strokeWidth="2"/>
+            {[1108,1148,1188,1228,1268].map(x=><line key={x} x1={x} y1="760" x2={x} y2="890" stroke="#342e20" strokeWidth="1.5"/>)}
+
+            <rect x="1314" y="758" width="104" height="138" fill="#1a1812" rx="1"/>
+            <rect x="1318" y="762" width="96" height="130" fill="none" stroke="#3a3420" strokeWidth="2"/>
+            <line x1="1366" y1="764" x2="1366" y2="892" stroke="#2e2c1e" strokeWidth="1.5"/>
+            <rect x="1370" y="764" width="40" height="60" fill="#141210" rx="1"/>
+            <rect x="1370" y="830" width="40" height="60" fill="#141210" rx="1"/>
+
+            <rect x="590" y="892" width="850" height="8" fill="#28261c"/>
+            <rect x="590" y="899" width="850" height="1" fill="#4a4430" opacity="0.5"/>
+          </g>
+
+          <path d="M524,271 C680,320 940,300 1144,83" stroke="#3e3620" strokeWidth="1.5" fill="none" opacity="0.75"/>
+          <path d="M620,271 C780,318 1060,298 1300,83" stroke="#3e3620" strokeWidth="1.5" fill="none" opacity="0.75"/>
+          <path d="M538,300 C700,346 960,328 1160,123" stroke="#383018" strokeWidth="1.2" fill="none" opacity="0.65"/>
+          <path d="M608,300 C780,344 1020,326 1282,123" stroke="#383018" strokeWidth="1.2" fill="none" opacity="0.65"/>
+          <path d="M572,220 C800,190 1020,148 1218,52" stroke="#302c18" strokeWidth="1.1" fill="none" opacity="0.55"/>
+          <path d="M1300,83 C1370,128 1420,168 1440,192" stroke="#343018" strokeWidth="1.3" fill="none" opacity="0.5"/>
+          <path d="M1282,123 C1360,162 1420,195 1440,218" stroke="#303018" strokeWidth="1.2" fill="none" opacity="0.5"/>
+        </svg>
+      </div>
+      <div style={{
+        position: 'absolute', top: '40%', left: '20%', transform: 'translate(-50%,-50%)',
+        width: 500, height: 500, borderRadius: '50%',
+        background: `radial-gradient(circle, ${SETTINGS.accentColor}0d 0%, transparent 70%)`,
+        pointerEvents: 'none',
+      }} />
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', width: '100%', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
+              <div style={{ width: 32, height: 1, background: SETTINGS.accentColor }} />
+              <span style={{ color: SETTINGS.accentColor, fontSize: '12px', fontWeight: '600', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                Forked River, NJ
+              </span>
+            </div>
+            <h1 style={{
+              fontFamily: 'Playfair Display, serif', fontSize: 'clamp(40px, 5vw, 68px)',
+              fontWeight: '700', lineHeight: 1.1, color: SETTINGS.creamColor, marginBottom: 24,
+            }}>
+              Powering<br />
+              <span style={{ color: SETTINGS.accentColor }}>New Jersey</span><br />
+              Homes &amp; Businesses
+            </h1>
+            <p style={{ color: '#b8b09a', fontSize: '18px', lineHeight: 1.7, marginBottom: 40, maxWidth: 480 }}>
+              West Energy LLC delivers licensed, expert electrical work with an unwavering commitment to quality craftsmanship and customer satisfaction.
+            </p>
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              <a href="#contact" style={{
+                background: SETTINGS.accentColor, color: '#fff',
+                padding: '16px 36px', borderRadius: 2, fontWeight: '600',
+                textDecoration: 'none', fontSize: '15px', letterSpacing: '0.05em',
+                textTransform: 'uppercase', transition: 'opacity 0.2s',
+              }}>
+                Get a Free Estimate
+              </a>
+              <a href="#services" style={{
+                border: `1px solid ${SETTINGS.creamColor}40`, color: SETTINGS.creamColor,
+                padding: '16px 36px', borderRadius: 2, fontWeight: '500',
+                textDecoration: 'none', fontSize: '15px', letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+              }}>
+                Our Services
+              </a>
+            </div>
+            <div style={{ display: 'flex', gap: 48, marginTop: 56, paddingTop: 40, borderTop: `1px solid ${SETTINGS.creamColor}15`, flexWrap: 'wrap' }}>
+              {[['Licensed', 'NJ #34EI01887500'], ['Insured', 'Fully covered'], ['Local', 'All of New Jersey']].map(([label, sub]) => (
+                <div key={label}>
+                  <div style={{ color: SETTINGS.accentColor, fontSize: '13px', fontWeight: '600', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 4 }}>{label}</div>
+                  <div style={{ color: '#8a8272', fontSize: '13px' }}>{sub}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ minHeight: 400 }} />
+        </div>
+      </div>
+      <style>{`
+        @media (max-width: 768px) {
+          #home > div:last-of-type > div { grid-template-columns: 1fr !important; gap: 40px !important; padding-top: 100px !important; padding-bottom: 60px !important; }
+          #home > div:last-of-type > div > div:last-child { display: none !important; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+// ── SERVICES ───────────────────────────────────────────────
+function Services() {
+  const services = [
+    { icon: "⚡", title: "Residential Electrical", desc: "Complete home electrical services — from new outlets and lighting upgrades to full rewiring and panel replacements." },
+    { icon: "🏗️", title: "Commercial Electrical", desc: "Reliable electrical solutions for businesses, offices, and commercial properties of all sizes." },
+    { icon: "🔌", title: "Panel Upgrades", desc: "Upgrade your electrical panel to meet modern demands safely and efficiently." },
+    { icon: "🚗", title: "EV Charger Installation", desc: "Level 2 home EV charger installation — the right way, properly permitted and inspected." },
+    { icon: "🔋", title: "Generator Installation", desc: "Stay powered during outages with whole-home standby generator hookups." },
+    { icon: "💡", title: "Lighting & Smart Home", desc: "Recessed lighting, fixtures, dimmers, and smart home electrical integrations." },
+    { icon: "🏠", title: "New Construction", desc: "Full electrical rough-in and finish work for new builds and major renovations." },
+    { icon: "🚁", title: "Aerial Photography & Thermography", desc: "FAA certified pilot for solar system troubleshooting and inspections using drone aerial photography and thermal imaging." },
+  ];
+
+  return (
+    <section id="services" style={{ padding: '100px 32px', background: SETTINGS.creamColor }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 64 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <div style={{ width: 24, height: 1, background: SETTINGS.accentColor }} />
+            <span style={{ color: SETTINGS.accentColor, fontSize: '12px', fontWeight: '600', letterSpacing: '0.15em', textTransform: 'uppercase' }}>What We Do</span>
+            <div style={{ width: 24, height: 1, background: SETTINGS.accentColor }} />
+          </div>
+          <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: '700', color: SETTINGS.darkColor, marginBottom: 16 }}>
+            Electrical Services
+          </h2>
+          <p style={{ color: '#6a6458', fontSize: '17px', maxWidth: 520, margin: '0 auto' }}>
+            From simple repairs to complex installations, we handle it all with precision and care.
+          </p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 24 }}>
+          {services.map(({ icon, title, desc }) => (
+            <div key={title} style={{
+              background: '#fff', border: `1px solid ${SETTINGS.darkColor}10`,
+              borderRadius: 3, padding: '32px 28px',
+              transition: 'border-color 0.2s, box-shadow 0.2s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = SETTINGS.accentColor + '60'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.08)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = SETTINGS.darkColor + '10'; e.currentTarget.style.boxShadow = 'none'; }}
+            >
+              <div style={{ fontSize: 28, marginBottom: 16 }}>{icon}</div>
+              <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '18px', fontWeight: '600', color: SETTINGS.darkColor, marginBottom: 10 }}>{title}</h3>
+              <p style={{ color: '#6a6458', fontSize: '14px', lineHeight: 1.7 }}>{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── WHY US ────────────────────────────────────────────────
+function WhyUs() {
+  const pillars = [
+    { title: "Quality Craftsmanship", points: ["Code-compliant installations every time", "Only top-tier materials and components", "Clean, organized work — always", "Work inspected and signed off properly"] },
+    { title: "Customer First", points: ["Upfront pricing — no surprises", "On time, every appointment", "We explain everything clearly", "Not done until you're 100% satisfied"] },
+    { title: "Licensed & Trusted", points: ["NJ License #34EI01887500", "Fully insured for your protection", "Years of local experience", "Serving all of New Jersey"] },
+  ];
+
+  return (
+    <section id="why-us" style={{ padding: '100px 32px', background: SETTINGS.darkColor }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 64 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <div style={{ width: 24, height: 1, background: SETTINGS.accentColor }} />
+            <span style={{ color: SETTINGS.accentColor, fontSize: '12px', fontWeight: '600', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Why West Energy</span>
+            <div style={{ width: 24, height: 1, background: SETTINGS.accentColor }} />
+          </div>
+          <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: '700', color: SETTINGS.creamColor, marginBottom: 16 }}>
+            Quality &amp; Service,<br />No Exceptions
+          </h2>
+          <p style={{ color: '#8a8272', fontSize: '17px', maxWidth: 520, margin: '0 auto' }}>
+            We built West Energy LLC on two promises: do the work right and treat every customer like family.
+          </p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32, marginBottom: 80 }}>
+          {pillars.map(({ title, points }) => (
+            <div key={title} style={{ border: `1px solid ${SETTINGS.accentColor}25`, borderRadius: 3, padding: '40px 36px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
+                <div style={{ width: 3, height: 28, background: SETTINGS.accentColor, borderRadius: 2, flexShrink: 0 }} />
+                <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '20px', fontWeight: '600', color: SETTINGS.creamColor }}>{title}</h3>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {points.map(p => (
+                  <div key={p} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                    <div style={{ marginTop: 2, flexShrink: 0, color: SETTINGS.accentColor }}><IconCheck size={16} color={SETTINGS.accentColor} /></div>
+                    <span style={{ color: '#b8b09a', fontSize: '14px', lineHeight: 1.5 }}>{p}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        {SETTINGS.showTestimonials && REVIEWS.length > 0 && (
+          <div>
+            <div style={{ textAlign: 'center', marginBottom: 40 }}>
+              <span style={{ color: SETTINGS.accentColor, fontSize: '12px', fontWeight: '600', letterSpacing: '0.15em', textTransform: 'uppercase' }}>What Customers Say</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+              {REVIEWS.map(({ quote, name, location }) => (
+                <div key={name + quote.slice(0, 12)} style={{ background: `${SETTINGS.creamColor}08`, border: `1px solid ${SETTINGS.creamColor}10`, borderRadius: 3, padding: '32px 28px' }}>
+                  <div style={{ display: 'flex', gap: 2, marginBottom: 20 }}>
+                    {[1,2,3,4,5].map(i => <IconStar key={i} size={14} filled={true} color={SETTINGS.accentColor} />)}
+                  </div>
+                  <p style={{ color: '#c8c0aa', fontSize: '14px', lineHeight: 1.8, marginBottom: 20, fontStyle: 'italic' }}>"{quote}"</p>
+                  <div style={{ color: SETTINGS.creamColor, fontSize: '13px', fontWeight: '600' }}>{name}</div>
+                  {location && <div style={{ color: '#6a6258', fontSize: '12px', marginTop: 2 }}>{location}</div>}
+                </div>
+              ))}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: 32 }}>
+              <a href={SETTINGS.googleReviewUrl} target="_blank" rel="noopener noreferrer" style={{
+                color: SETTINGS.accentColor, fontSize: '13px', fontWeight: '600',
+                letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none',
+                borderBottom: `1px solid ${SETTINGS.accentColor}50`, paddingBottom: 4,
+              }}>
+                Read more on Google →
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ── GALLERY ───────────────────────────────────────────────
+function Gallery() {
+  const [lightboxImg, setLightboxImg] = useState(null);
+
+  useEffect(() => {
+    if (!lightboxImg) return;
+    const onKey = (e) => { if (e.key === 'Escape') setLightboxImg(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightboxImg]);
+
+  return (
+    <section id="gallery" style={{ padding: '100px 32px', background: SETTINGS.creamColor }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 64 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <div style={{ width: 24, height: 1, background: SETTINGS.accentColor }} />
+            <span style={{ color: SETTINGS.accentColor, fontSize: '12px', fontWeight: '600', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Our Work</span>
+            <div style={{ width: 24, height: 1, background: SETTINGS.accentColor }} />
+          </div>
+          <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: '700', color: SETTINGS.darkColor, marginBottom: 16 }}>
+            Past Projects
+          </h2>
+          <p style={{ color: '#6a6458', fontSize: '17px', maxWidth: 480, margin: '0 auto' }}>
+            A sample of the work we're proud of. Photos will be added as projects are completed.
+          </p>
+        </div>
+        <div style={{ columns: '3 280px', gap: 16 }}>
+          {GALLERY.map((item, i) => (
+            <div key={item.src + i} onClick={() => setLightboxImg(item)} style={{
+              marginBottom: 16, breakInside: 'avoid', cursor: 'zoom-in',
+              border: `1px solid ${SETTINGS.darkColor}10`, borderRadius: 3, overflow: 'hidden',
+              transition: 'box-shadow 0.2s',
+            }}
+              onMouseEnter={e => e.currentTarget.style.boxShadow = `0 8px 32px ${SETTINGS.accentColor}30`}
+              onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+            >
+              <img src={item.src} alt={item.label} loading="lazy"
+                style={{ width: '100%', display: 'block', objectFit: 'cover', maxHeight: 320 }}
+              />
+              <div style={{ padding: '12px 16px', background: '#fff', fontSize: '13px', color: '#6a6458', fontWeight: '400' }}>
+                {item.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {lightboxImg && (
+        <div onClick={() => setLightboxImg(null)} role="dialog" aria-label="Project photo" style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 200,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32, cursor: 'zoom-out',
+        }}>
+          <div style={{ maxWidth: 1000, width: '100%', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setLightboxImg(null)}
+              aria-label="Close"
+              style={{
+                position: 'absolute', top: -44, right: 0,
+                background: 'none', border: 'none', color: '#fff',
+                cursor: 'pointer', padding: 4,
+              }}>
+              <IconX size={28} color="#fff" />
+            </button>
+            <img src={lightboxImg.src} alt={lightboxImg.label}
+              style={{ width: '100%', display: 'block', maxHeight: '80vh', objectFit: 'contain', background: '#000' }} />
+            <div style={{ background: SETTINGS.darkColor, padding: '16px 20px', color: SETTINGS.creamColor, fontSize: '14px' }}>{lightboxImg.label}</div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ── CONTACT ───────────────────────────────────────────────
+function Contact() {
+  const [form, setForm] = useState({ name: '', phone: '', email: '', service: '', message: '' });
+  const [status, setStatus] = useState('idle'); // idle | sending | sent | error
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('sending');
+    setErrorMsg('');
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${SETTINGS.formDeliveryEmail}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          _subject: `New Free Estimate request from ${form.name || 'website'}`,
+          _template: 'table',
+          _captcha: 'false',
+          Name: form.name,
+          Phone: form.phone,
+          Email: form.email,
+          Service: form.service,
+          Message: form.message,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && (data.success === 'true' || data.success === true)) {
+        setStatus('sent');
+      } else {
+        throw new Error(data.message || 'Submission failed');
+      }
+    } catch (err) {
+      setStatus('error');
+      setErrorMsg(err.message || 'Something went wrong. Please email us directly.');
+    }
+  };
+
+  const inputStyle = {
+    width: '100%', padding: '14px 16px', border: `1px solid ${SETTINGS.darkColor}20`,
+    borderRadius: 2, fontSize: '15px', fontFamily: 'DM Sans, sans-serif',
+    background: '#fff', color: SETTINGS.darkColor, outline: 'none',
+  };
+
+  return (
+    <section id="contact" style={{ padding: '100px 32px', background: '#edeadf' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <div style={{ width: 24, height: 1, background: SETTINGS.accentColor }} />
+            <span style={{ color: SETTINGS.accentColor, fontSize: '12px', fontWeight: '600', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Get In Touch</span>
+          </div>
+          <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: '700', color: SETTINGS.darkColor, marginBottom: 20 }}>
+            Request a Free Estimate
+          </h2>
+          <p style={{ color: '#6a6458', fontSize: '16px', lineHeight: 1.7, marginBottom: 40 }}>
+            Ready to get started? Send us a message and we'll get back to you promptly. No commitment required.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {[
+              { icon: <IconPhone size={18} color={SETTINGS.accentColor} />, label: 'Phone', value: SETTINGS.phoneNumber, href: `tel:${SETTINGS.phoneNumber.replace(/[^0-9+]/g,'')}` },
+              { icon: <IconMail size={18} color={SETTINGS.accentColor} />, label: 'Email', value: SETTINGS.emailAddress, href: `mailto:${SETTINGS.emailAddress}` },
+              { icon: <IconPin size={18} color={SETTINGS.accentColor} />, label: 'Location', value: 'Forked River, NJ\nServing All of New Jersey', href: null },
+            ].map(({ icon, label, value, href }) => (
+              <div key={label} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                <div style={{ width: 44, height: 44, border: `1px solid ${SETTINGS.accentColor}40`, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {icon}
+                </div>
+                <div>
+                  <div style={{ fontSize: '12px', fontWeight: '600', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8a8070', marginBottom: 3 }}>{label}</div>
+                  {href ? (
+                    <a href={href} style={{ color: SETTINGS.darkColor, textDecoration: 'none', fontSize: '15px', whiteSpace: 'pre-line' }}>{value}</a>
+                  ) : (
+                    <div style={{ color: SETTINGS.darkColor, fontSize: '15px', whiteSpace: 'pre-line' }}>{value}</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 40, paddingTop: 32, borderTop: `1px solid ${SETTINGS.darkColor}15` }}>
+            <div style={{ fontSize: '12px', color: '#8a8070', lineHeight: 1.6, marginBottom: 16 }}>
+              NJ Licensed Electrical Contractor<br />
+              License # 34EI01887500
+            </div>
+            <a href={SETTINGS.googleReviewUrl} target="_blank" rel="noopener noreferrer" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 10,
+              background: '#fff', border: `1px solid ${SETTINGS.darkColor}12`,
+              borderRadius: 3, padding: '10px 16px', textDecoration: 'none',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.06)', transition: 'box-shadow 0.2s',
+            }}
+              onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.12)'}
+              onMouseLeave={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              </svg>
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: SETTINGS.darkColor }}>Leave us a Google Review</div>
+                <div style={{ display: 'flex', gap: 2, marginTop: 3 }}>
+                  {[1,2,3,4,5].map(i => <IconStar key={i} size={12} filled={true} color="#FBBC05"/>)}
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div style={{ background: '#fff', border: `1px solid ${SETTINGS.darkColor}10`, borderRadius: 3, padding: '48px 40px' }}>
+          {status === 'sent' ? (
+            <div style={{ textAlign: 'center', padding: '40px 0' }}>
+              <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
+              <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '24px', color: SETTINGS.darkColor, marginBottom: 12 }}>Message Sent!</h3>
+              <p style={{ color: '#6a6458', fontSize: '15px' }}>We'll be in touch shortly. Thank you for reaching out to West Energy LLC.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#8a8070', marginBottom: 8 }}>Name *</label>
+                  <input required style={inputStyle} placeholder="Your name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#8a8070', marginBottom: 8 }}>Phone</label>
+                  <input style={inputStyle} placeholder="(609) 000-0000" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#8a8070', marginBottom: 8 }}>Email *</label>
+                <input required type="email" style={inputStyle} placeholder="your@email.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#8a8070', marginBottom: 8 }}>Service Needed</label>
+                <select style={{ ...inputStyle, appearance: 'none' }} value={form.service} onChange={e => setForm({ ...form, service: e.target.value })}>
+                  <option value="">Select a service...</option>
+                  <option>Residential Electrical</option>
+                  <option>Commercial Electrical</option>
+                  <option>Panel Upgrade</option>
+                  <option>EV Charger Installation</option>
+                  <option>Generator Installation</option>
+                  <option>Lighting / Smart Home</option>
+                  <option>New Construction</option>
+                  <option>Aerial Photography &amp; Thermography</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#8a8070', marginBottom: 8 }}>Message</label>
+                <textarea style={{ ...inputStyle, height: 120, resize: 'vertical' }} placeholder="Describe your project or question..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} />
+              </div>
+              {status === 'error' && (
+                <div style={{
+                  background: '#fdecec', color: '#8a2c2c', border: '1px solid #f3c2c2',
+                  padding: '12px 14px', borderRadius: 2, fontSize: '13px',
+                }}>
+                  {errorMsg} You can also email us directly at <a href={`mailto:${SETTINGS.emailAddress}`} style={{ color: '#8a2c2c' }}>{SETTINGS.emailAddress}</a>.
+                </div>
+              )}
+              <button type="submit" disabled={status === 'sending'} style={{
+                background: SETTINGS.accentColor, color: '#fff', border: 'none',
+                padding: '16px', borderRadius: 2, fontSize: '14px', fontWeight: '600',
+                letterSpacing: '0.08em', textTransform: 'uppercase',
+                cursor: status === 'sending' ? 'wait' : 'pointer',
+                opacity: status === 'sending' ? 0.7 : 1,
+              }}>
+                {status === 'sending' ? 'Sending…' : 'Send Message'}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+      <style>{`
+        @media (max-width: 768px) {
+          #contact > div { grid-template-columns: 1fr !important; gap: 40px !important; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+// ── FOOTER ────────────────────────────────────────────────
+function Footer() {
+  return (
+    <footer style={{ background: SETTINGS.darkColor, padding: '48px 32px', borderTop: `1px solid ${SETTINGS.accentColor}20` }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24 }}>
+        <div>
+          <img src="uploads/West Energy Logo no background.png" alt="West Energy LLC" style={{ height: 44, marginBottom: 12 }} />
+          <div style={{ color: '#5a5448', fontSize: '12px', lineHeight: 1.8 }}>
+            Licensed Electrical Contractor<br />
+            NJ License #34EI01887500<br />
+            Forked River, NJ
+          </div>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ color: '#5a5448', fontSize: '12px', marginBottom: 8 }}>
+            © {new Date().getFullYear()} West Energy LLC. All rights reserved.
+          </div>
+          <div style={{ color: '#5a5448', fontSize: '12px' }}>
+            <a href="https://www.westenergyusa.com/" style={{ color: '#6a6258', textDecoration: 'none' }}>westenergyusa.com</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// ── APP ───────────────────────────────────────────────────
+function App() {
+  const [activeSection, setActiveSection] = useState('home');
+
+  useEffect(() => {
+    const sections = ['home', 'services', 'why-us', 'gallery', 'contact'];
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) setActiveSection(entry.target.id);
+      });
+    }, { threshold: 0.3 });
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div>
+      <Nav activeSection={activeSection} />
+      <Hero />
+      <Services />
+      <WhyUs />
+      <Gallery />
+      <Contact />
+      <Footer />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
